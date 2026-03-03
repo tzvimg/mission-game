@@ -1130,7 +1130,7 @@
             <p class="alert-text">
                 העולם איבד את האנרגיה שלו.<br>
                 המערכות קורסות אחת אחרי השנייה.<br>
-                רק <strong>שלושה סוכנים מיוחדים</strong> יכולים להציל אותו...<br>
+                רק <strong>שלו, נגה ודור</strong> יכולים להציל אותו...<br>
                 <strong>האם אתם מוכנים למשימה?</strong>
             </p>
         </div>
@@ -1145,25 +1145,25 @@
                 <div class="stage-icon">👤</div>
                 <div>
                     <div class="stage-title">זיהוי סוכנים</div>
-                    <div class="stage-label">הזינו את פרטי הצוות</div>
+                    <div class="stage-label">אמתו את הזהות שלכם</div>
                 </div>
             </div>
 
             <div class="agents-form" id="agents-form">
                 <div class="agent-row">
                     <div class="agent-avatar" style="background:rgba(255,45,85,0.2);border:2px solid var(--danger)">🦊</div>
-                    <input class="agent-input" placeholder="שם סוכן/ת 1" id="agent1-name">
-                    <input class="agent-input agent-age-input" placeholder="גיל" type="number" min="1" max="99" id="agent1-age">
+                    <input class="agent-input" value="שלו" id="agent1-name" readonly>
+                    <input class="agent-input agent-age-input" value="9" type="number" id="agent1-age" readonly>
                 </div>
                 <div class="agent-row">
                     <div class="agent-avatar" style="background:rgba(0,240,255,0.2);border:2px solid var(--primary)">🐺</div>
-                    <input class="agent-input" placeholder="שם סוכן/ת 2" id="agent2-name">
-                    <input class="agent-input agent-age-input" placeholder="גיל" type="number" min="1" max="99" id="agent2-age">
+                    <input class="agent-input" value="נגה" id="agent2-name" readonly>
+                    <input class="agent-input agent-age-input" value="7" type="number" id="agent2-age" readonly>
                 </div>
                 <div class="agent-row">
                     <div class="agent-avatar" style="background:rgba(255,215,0,0.2);border:2px solid var(--gold)">🦁</div>
-                    <input class="agent-input" placeholder="שם סוכן/ת 3" id="agent3-name">
-                    <input class="agent-input agent-age-input" placeholder="גיל" type="number" min="1" max="99" id="agent3-age">
+                    <input class="agent-input" value="דור" id="agent3-name" readonly>
+                    <input class="agent-input agent-age-input" value="3" type="number" id="agent3-age" readonly>
                 </div>
             </div>
 
@@ -1883,33 +1883,29 @@
                 photoContainer.appendChild(photoImg);
             }
 
-            // Certificates
-            const roles = {
-                young: ['סוכן אנרגיה ראשי', 'לוחם אנרגיה', 'כוח על מיוחד'],
-                mid: ['אחראי מבצעים', 'קצין מודיעין', 'ראש חוליית בילוש'],
-                old: ['מפקד אסטרטגי', 'ראש המוסד', 'גנרל האנרגיה']
+            // Certificates — personalized roles
+            const personalRoles = {
+                'שלו': { role: 'מפקד אסטרטגי', emoji: '🦊', stars: '⭐⭐⭐⭐⭐' },
+                'נגה': { role: 'אחראית מבצעים', emoji: '🐺', stars: '⭐⭐⭐⭐' },
+                'דור': { role: 'סוכן אנרגיה ראשי', emoji: '🦁', stars: '⭐⭐⭐' }
             };
 
             const certContainer = document.getElementById('certificates');
-            const emojis = ['🦊', '🐺', '🦁'];
-            const colors = ['var(--danger)', 'var(--primary)', 'var(--gold)'];
 
-            state.agents.sort((a, b) => a.age - b.age).forEach((agent, i) => {
-                let roleList;
-                if (agent.age <= 5) roleList = roles.young;
-                else if (agent.age <= 8) roleList = roles.mid;
-                else roleList = roles.old;
-
-                const role = roleList[Math.floor(Math.random() * roleList.length)];
-                const stars = '⭐'.repeat(Math.min(5, Math.max(3, Math.ceil(agent.age / 2))));
+            state.agents.forEach((agent) => {
+                const info = personalRoles[agent.name] || {
+                    role: 'סוכן מיוחד',
+                    emoji: '🌟',
+                    stars: '⭐⭐⭐'
+                };
 
                 const cert = document.createElement('div');
                 cert.className = 'certificate';
                 cert.innerHTML = `
-                    <div class="cert-name">${emojis[i]} ${agent.name}</div>
-                    <div class="cert-role">${role}</div>
+                    <div class="cert-name">${info.emoji} ${agent.name}</div>
+                    <div class="cert-role">${info.role}</div>
                     <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-top:5px">גיל ${agent.age}</div>
-                    <div class="cert-stars">${stars}</div>
+                    <div class="cert-stars">${info.stars}</div>
                 `;
                 certContainer.appendChild(cert);
             });
