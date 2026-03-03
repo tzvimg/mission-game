@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבצע: חילוץ האנרגיה הסודית</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --danger: #ff2d55;
+            --success: #39ff14;
+            --gold: #ffd700;
+            --dark: #0a0e27;
+            --darker: #060818;
+            --card-bg: rgba(10, 14, 39, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--darker);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
+
+        /* Screen system */
+        .screen {
+            display: none;
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: screenIn 0.8s ease-out;
+        }
+
+        @keyframes screenIn {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Intro screen */
+        #intro-screen {
+            text-align: center;
+        }
+
+        .mission-badge {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+            animation: pulse 2s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(0,240,255,0.15), transparent);
+        }
+
+        .mission-badge::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            opacity: 0.3;
+            animation: pulse 2s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,240,255,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0,240,255,0.6); }
+        }
+
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(0,240,255,0.5);
+            margin-bottom: 10px;
+            position: relative;
+            animation: glitch 3s ease-in-out infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { text-shadow: 0 0 20px rgba(0,240,255,0.5); }
+            92% { text-shadow: -3px 0 var(--danger), 3px 0 var(--primary); }
+            94% { text-shadow: 3px 0 var(--danger), -3px 0 var(--primary); }
+            96% { text-shadow: 0 0 20px rgba(0,240,255,0.5); }
+            98% { text-shadow: -2px 0 var(--danger), 2px 0 var(--success); }
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .alert-box {
+            background: rgba(255,45,85,0.1);
+            border: 1px solid var(--danger);
+            border-radius: 12px;
+            padding: 25px 30px;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: var(--danger);
+            animation: scanline 2s ease-in-out infinite;
+        }
+
+        @keyframes scanline {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .alert-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 16px 50px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 30px rgba(0,240,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255,45,85,0.5);
+        }
+
+        .btn-success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: var(--success);
+            color: var(--dark);
+            box-shadow: 0 0 30px rgba(57,255,20,0.5);
+        }
+
+        .btn-gold {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-gold:hover {
+            background: var(--gold);
+            color: var(--dark);
+            box-shadow: 0 0 30px rgba(255,215,0,0.5);
+        }
+
+        /* Timer bar */
+        .timer-bar-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            transition: width 1s linear;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Progress indicator */
+        .progress-steps {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 8px;
+            z-index: 100;
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(0,240,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-steps.visible {
+            display: flex;
+        }
+
+        .step-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+            border-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .step-connector {
+            width: 30px;
+            height: 2px;
+            background: rgba(255,255,255,0.15);
+            align-self: center;
+            transition: background 0.5s ease;
+        }
+
+        .step-connector.completed {
+            background: var(--success);
+            box-shadow: 0 0 5px var(--success);
+        }
+
+        /* Stage cards */
+        .stage-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 700px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stage-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(0,240,255,0.05), transparent, rgba(255,45,85,0.03));
+            pointer-events: none;
+        }
+
+        .stage-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stage-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            background: rgba(0,240,255,0.1);
+            border: 1px solid rgba(0,240,255,0.3);
+        }
+
+        .stage-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stage-label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 2px;
+        }
+
+        .stage-timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            color: var(--primary);
+            margin: 20px 0;
+            text-shadow: 0 0 15px rgba(0,240,255,0.4);
+        }
+
+        .stage-timer.warning {
+            color: var(--danger);
+            text-shadow: 0 0 15px rgba(255,45,85,0.4);
+            animation: blink 0.5s ease-in-out infinite;
+        }
+
+        /* Task items */
+        .task-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .task-item:hover {
+            background: rgba(0,240,255,0.05);
+            border-color: rgba(0,240,255,0.2);
+        }
+
+        .task-item.completed {
+            background: rgba(57,255,20,0.05);
+            border-color: rgba(57,255,20,0.2);
+        }
+
+        .task-check {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .task-item.completed .task-check {
+            border-color: var(--success);
+            background: var(--success);
+            color: var(--dark);
+        }
+
+        .task-text {
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        /* Code input */
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+            justify-content: center;
+        }
+
+        .code-input {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            width: 65px;
+            height: 75px;
+            text-align: center;
+            background: rgba(0,240,255,0.05);
+            border: 2px solid rgba(0,240,255,0.3);
+            border-radius: 12px;
+            color: var(--primary);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .code-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0,240,255,0.3);
+        }
+
+        .code-input.correct {
+            border-color: var(--success);
+            background: rgba(57,255,20,0.1);
+            color: var(--success);
+        }
+
+        .code-input.wrong {
+            border-color: var(--danger);
+            background: rgba(255,45,85,0.1);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* Riddle options */
+        .riddle-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .riddle-option {
+            padding: 18px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .riddle-option:hover {
+            border-color: var(--primary);
+            background: rgba(0,240,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .riddle-option.selected {
+            border-color: var(--primary);
+            background: rgba(0,240,255,0.1);
+        }
+
+        .riddle-option.correct {
+            border-color: var(--success);
+            background: rgba(57,255,20,0.15);
+            animation: correctPulse 0.5s ease;
+        }
+
+        .riddle-option.wrong {
+            border-color: var(--danger);
+            background: rgba(255,45,85,0.1);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Creative stage */
+        .team-input {
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.3rem;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 12px;
+            color: #fff;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .team-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
+        }
+
+        .canvas-container {
+            position: relative;
+            margin: 20px auto;
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.95);
+        }
+
+        #draw-canvas {
+            cursor: crosshair;
+            display: block;
+            touch-action: none;
+        }
+
+        .canvas-tools {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .color-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-btn:hover, .color-btn.active {
+            transform: scale(1.2);
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .tool-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Photo upload */
+        .photo-upload-area {
+            border: 2px dashed rgba(255,215,0,0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px 0;
+        }
+
+        .photo-upload-area:hover {
+            border-color: var(--gold);
+            background: rgba(255,215,0,0.05);
+        }
+
+        .photo-upload-area .upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .uploaded-photo {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        /* Victory screen */
+        #victory-screen {
+            text-align: center;
+        }
+
+        .trophy {
+            font-size: 100px;
+            animation: trophyBounce 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes trophyBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(-5deg); }
+            75% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .victory-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold), #ff8c00, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        /* Certificates */
+        .certificates-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.05));
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 25px 30px;
+            min-width: 220px;
+            position: relative;
+            overflow: hidden;
+            animation: certIn 0.6s ease-out both;
+        }
+
+        .certificate:nth-child(2) { animation-delay: 0.2s; }
+        .certificate:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes certIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .certificate::before {
+            content: '🏅';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+        }
+
+        .cert-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        .cert-role {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .cert-stars {
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            top: -20px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotateZ(0deg) rotateY(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(720deg) rotateY(360deg); opacity: 0; }
+        }
+
+        /* Transition overlay */
+        .transition-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--darker);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .transition-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .transition-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .transition-icon {
+            font-size: 60px;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        /* Agent name inputs */
+        .agents-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .agent-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .agent-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .agent-input {
+            flex: 1;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.1rem;
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(0,240,255,0.2);
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .agent-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0,240,255,0.2);
+        }
+
+        .agent-age-input {
+            width: 80px;
+            flex: none;
+            text-align: center;
+        }
+
+        /* Hint text */
+        .hint {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        /* Secret word reveal */
+        .secret-word {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--success);
+            text-shadow: 0 0 20px rgba(57,255,20,0.5);
+            letter-spacing: 8px;
+            margin: 20px 0;
+            animation: revealGlow 1s ease-in-out;
+        }
+
+        @keyframes revealGlow {
+            0% { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { transform: scale(1); filter: blur(0); }
+        }
+
+        /* Score display */
+        .score-display {
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            z-index: 100;
+            display: none;
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .score-display.visible {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .stage-card { padding: 25px 20px; }
+            .riddle-options { grid-template-columns: 1fr; }
+            .code-input { width: 50px; height: 60px; font-size: 1.5rem; }
+            .stage-timer { font-size: 2rem; }
+        }
+
+        /* Sound button */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .sound-toggle:hover {
+            border-color: var(--primary);
+        }
+
+        /* Mission complete stamp */
+        .mission-stamp {
+            display: inline-block;
+            border: 4px solid var(--success);
+            color: var(--success);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 900;
+            padding: 10px 25px;
+            border-radius: 8px;
+            transform: rotate(-5deg);
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: stampIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes stampIn {
+            from { transform: rotate(-5deg) scale(3); opacity: 0; }
+            to { transform: rotate(-5deg) scale(1); opacity: 1; }
+        }
+
+        /* Heroes wall */
+        .heroes-wall {
+            background: rgba(255,215,0,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .heroes-wall img {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .heroes-wall canvas {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        /* Loading dots */
+        .loading-dots span {
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 80%, 100% { opacity: 0.3; }
+            40% { opacity: 1; }
+        }
+
+        .energy-bar-container {
+            width: 100%;
+            max-width: 400px;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px auto;
+            border: 1px solid rgba(0,240,255,0.3);
+        }
+
+        .energy-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger), var(--gold), var(--success));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(57,255,20,0.5);
+            width: 0%;
+        }
+
+        .energy-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- Progress steps -->
+    <div class="progress-steps" id="progress-steps">
+        <div class="step-dot" data-step="1"></div>
+        <div class="step-connector"></div>
+        <div class="step-dot" data-step="2"></div>
+        <div class="step-connector"></div>
+        <div class="step-dot" data-step="3"></div>
+        <div class="step-connector"></div>
+        <div class="step-dot" data-step="4"></div>
+    </div>
+
+    <!-- Score -->
+    <div class="score-display" id="score-display">⚡ <span id="score-value">0</span></div>
+
+    <!-- Sound toggle -->
+    <button class="sound-toggle" id="sound-toggle" title="Sound">🔊</button>
+
+    <!-- ====== INTRO SCREEN ====== -->
+    <div class="screen active" id="intro-screen">
+        <div class="mission-badge">🛡️</div>
+        <h1 class="glitch-title">מבצע: חילוץ האנרגיה</h1>
+        <p class="subtitle">הסודית</p>
+
+        <div class="alert-box">
+            <span class="alert-icon">🔴 התראה דחופה</span>
+            <p class="alert-text">
+                העולם איבד את האנרגיה שלו.<br>
+                המערכות קורסות אחת אחרי השנייה.<br>
+                רק <strong>שלושה סוכנים מיוחדים</strong> יכולים להציל אותו...<br>
+                <strong>האם אתם מוכנים למשימה?</strong>
+            </p>
+        </div>
+
+        <button class="btn btn-danger" onclick="showAgentSetup()">🚨 קבלו את המשימה</button>
+    </div>
+
+    <!-- ====== AGENT SETUP SCREEN ====== -->
+    <div class="screen" id="setup-screen">
+        <div class="stage-card">
+            <div class="stage-header">
+                <div class="stage-icon">👤</div>
+                <div>
+                    <div class="stage-title">זיהוי סוכנים</div>
+                    <div class="stage-label">הזינו את פרטי הצוות</div>
+                </div>
+            </div>
+
+            <div class="agents-form" id="agents-form">
+                <div class="agent-row">
+                    <div class="agent-avatar" style="background:rgba(255,45,85,0.2);border:2px solid var(--danger)">🦊</div>
+                    <input class="agent-input" placeholder="שם סוכן/ת 1" id="agent1-name">
+                    <input class="agent-input agent-age-input" placeholder="גיל" type="number" min="1" max="99" id="agent1-age">
+                </div>
+                <div class="agent-row">
+                    <div class="agent-avatar" style="background:rgba(0,240,255,0.2);border:2px solid var(--primary)">🐺</div>
+                    <input class="agent-input" placeholder="שם סוכן/ת 2" id="agent2-name">
+                    <input class="agent-input agent-age-input" placeholder="גיל" type="number" min="1" max="99" id="agent2-age">
+                </div>
+                <div class="agent-row">
+                    <div class="agent-avatar" style="background:rgba(255,215,0,0.2);border:2px solid var(--gold)">🦁</div>
+                    <input class="agent-input" placeholder="שם סוכן/ת 3" id="agent3-name">
+                    <input class="agent-input agent-age-input" placeholder="גיל" type="number" min="1" max="99" id="agent3-age">
+                </div>
+            </div>
+
+            <div style="text-align:center">
+                <button class="btn" onclick="startMission()">🔓 אמתו זהות והתחילו</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== STAGE 1: MOVEMENT ====== -->
+    <div class="screen" id="stage1-screen">
+        <div class="stage-card">
+            <div class="stage-header">
+                <div class="stage-icon" style="background:rgba(255,45,85,0.1);border-color:var(--danger)">🏃</div>
+                <div>
+                    <div class="stage-title">שלב 1: משימת תנועה</div>
+                    <div class="stage-label">הוציאו אנרגיה וחממו את האווירה!</div>
+                </div>
+            </div>
+
+            <div class="stage-timer" id="stage1-timer">10:00</div>
+
+            <div class="energy-label">⚡ רמת אנרגיה עולמית</div>
+            <div class="energy-bar-container">
+                <div class="energy-bar-fill" id="energy-bar"></div>
+            </div>
+
+            <ul class="task-list" id="stage1-tasks">
+                <li class="task-item" onclick="toggleTask(this, 1)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🦘 קפצו 40 קפיצות (כל הצוות ביחד!)</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 1)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🪑 מסלול מכשולים בין 3 כיסאות — הלוך וחזור</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 1)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🦀 ללכת כמו סרטן עד המטבח ולחזור</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 1)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🤸 5 גלגולים על הרצפה (כל אחד!)</span>
+                </li>
+            </ul>
+
+            <div id="stage1-code-section" style="display:none">
+                <p style="text-align:center;margin-bottom:10px;color:var(--primary)">
+                    🔑 הזינו את הקוד הסודי: כמה כיסאות יש בסלון?
+                </p>
+                <div class="code-input-group">
+                    <input class="code-input" maxlength="1" id="code1-1" oninput="moveToNext(this,'code1-2')">
+                    <input class="code-input" maxlength="1" id="code1-2" oninput="checkStage1Code()">
+                </div>
+                <p class="hint" id="stage1-hint" style="text-align:center"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== STAGE 2: DETECTIVE ====== -->
+    <div class="screen" id="stage2-screen">
+        <div class="stage-card">
+            <div class="stage-header">
+                <div class="stage-icon" style="background:rgba(0,240,255,0.1);border-color:var(--primary)">🔍</div>
+                <div>
+                    <div class="stage-title">שלב 2: משימת בילוש</div>
+                    <div class="stage-label">מצאו את הפריטים הסודיים בבית!</div>
+                </div>
+            </div>
+
+            <div class="stage-timer" id="stage2-timer">15:00</div>
+
+            <ul class="task-list" id="stage2-tasks">
+                <li class="task-item" onclick="toggleTask(this, 2)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🔵 מצאו משהו עגול</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 2)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🔴 מצאו משהו אדום</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 2)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">🔤 מצאו משהו שמתחיל באות ש׳</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 2)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">📏 מצאו משהו שיותר גבוה מהגדול שבכם</span>
+                </li>
+                <li class="task-item" onclick="toggleTask(this, 2)">
+                    <div class="task-check">✓</div>
+                    <span class="task-text">✨ מצאו משהו שנוצץ</span>
+                </li>
+            </ul>
+
+            <div id="stage2-complete" style="display:none;text-align:center">
+                <p style="color:var(--primary);margin-bottom:10px">🎯 מצאתם הכל! המילה הסודית היא:</p>
+                <div class="secret-word" id="secret-word-2"></div>
+                <button class="btn btn-success" onclick="goToStage(3)">➡️ לשלב הבא</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== STAGE 3: RIDDLES ====== -->
+    <div class="screen" id="stage3-screen">
+        <div class="stage-card">
+            <div class="stage-header">
+                <div class="stage-icon" style="background:rgba(57,255,20,0.1);border-color:var(--success)">🧩</div>
+                <div>
+                    <div class="stage-title">שלב 3: חידה קבוצתית</div>
+                    <div class="stage-label">עבדו ביחד כדי לפתור!</div>
+                </div>
+            </div>
+
+            <div class="stage-timer" id="stage3-timer">10:00</div>
+
+            <div id="riddle-container">
+                <!-- Riddles injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== STAGE 4: CREATIVE ====== -->
+    <div class="screen" id="stage4-screen">
+        <div class="stage-card">
+            <div class="stage-header">
+                <div class="stage-icon" style="background:rgba(255,215,0,0.1);border-color:var(--gold)">🎨</div>
+                <div>
+                    <div class="stage-title">שלב 4: משימת יצירה</div>
+                    <div class="stage-label">צרו את הזהות של הצוות הסודי!</div>
+                </div>
+            </div>
+
+            <div class="stage-timer" id="stage4-timer">15:00</div>
+
+            <div style="text-align:center;margin:15px 0">
+                <label style="color:var(--gold);font-size:1.1rem;display:block;margin-bottom:10px">📛 שם הצוות הסודי</label>
+                <input class="team-input" placeholder="בחרו שם מגניב!" id="team-name-input">
+            </div>
+
+            <div style="text-align:center">
+                <label style="color:var(--gold);font-size:1.1rem;display:block;margin-bottom:10px">🎨 ציירו את הלוגו של הצוות</label>
+                <div class="canvas-tools">
+                    <button class="color-btn active" style="background:#000" onclick="setColor('#000', this)"></button>
+                    <button class="color-btn" style="background:#ff2d55" onclick="setColor('#ff2d55', this)"></button>
+                    <button class="color-btn" style="background:#00f0ff" onclick="setColor('#00f0ff', this)"></button>
+                    <button class="color-btn" style="background:#39ff14" onclick="setColor('#39ff14', this)"></button>
+                    <button class="color-btn" style="background:#ffd700" onclick="setColor('#ffd700', this)"></button>
+                    <button class="color-btn" style="background:#8b5cf6" onclick="setColor('#8b5cf6', this)"></button>
+                    <button class="color-btn" style="background:#ff8c00" onclick="setColor('#ff8c00', this)"></button>
+                    <button class="tool-btn" onclick="setBrushSize(3)">דק</button>
+                    <button class="tool-btn" onclick="setBrushSize(8)">בינוני</button>
+                    <button class="tool-btn" onclick="setBrushSize(15)">עבה</button>
+                    <button class="tool-btn" onclick="clearCanvas()">🗑️ נקה</button>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="draw-canvas" width="350" height="300"></canvas>
+                </div>
+            </div>
+
+            <div style="text-align:center;margin:15px 0">
+                <label style="color:var(--gold);font-size:1.1rem;display:block;margin-bottom:10px">📸 העלו תמונת צוות</label>
+                <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()">
+                    <div class="upload-icon">📸</div>
+                    <p>לחצו כאן להעלאת תמונה</p>
+                </div>
+                <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+                <img class="uploaded-photo" id="uploaded-photo">
+            </div>
+
+            <div style="text-align:center;margin-top:20px">
+                <button class="btn btn-gold" onclick="finishMission()">🏆 סיימו את המבצע!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== VICTORY SCREEN ====== -->
+    <div class="screen" id="victory-screen">
+        <div class="trophy">🏆</div>
+        <h1 class="victory-title">המבצע הושלם!</h1>
+        <div class="mission-stamp">MISSION COMPLETE ✓</div>
+
+        <p style="font-size:1.2rem;color:rgba(255,255,255,0.7);margin:15px 0">
+            צוות <strong id="victory-team-name" style="color:var(--gold)"></strong> הציל את האנרגיה של העולם!
+        </p>
+
+        <div class="heroes-wall" id="heroes-wall">
+            <h3 style="color:var(--gold);font-family:'Orbitron',sans-serif;margin-bottom:15px">🏛️ קיר הגיבורים</h3>
+            <div id="heroes-logo"></div>
+            <div id="heroes-photo"></div>
+        </div>
+
+        <div class="certificates-grid" id="certificates"></div>
+
+        <div style="margin-top:30px">
+            <button class="btn" onclick="location.reload()">🔄 מבצע חדש</button>
+        </div>
+    </div>
+
+    <!-- Transition overlay -->
+    <div class="transition-overlay" id="transition">
+        <div class="transition-icon" id="transition-icon">🔓</div>
+        <div class="transition-text" id="transition-text">פותח שלב הבא...</div>
+    </div>
+
+    <!-- Confetti container -->
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <script>
+        // ===== GAME STATE =====
+        const state = {
+            agents: [],
+            currentStage: 0,
+            score: 0,
+            teamName: '',
+            soundOn: true,
+            timers: {},
+            stage1Code: null
+        };
+
+        // ===== PARTICLES =====
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.width = (2 + Math.random() * 3) + 'px';
+                p.style.height = p.style.width;
+                const colors = ['var(--primary)', 'var(--danger)', 'var(--gold)', 'var(--success)'];
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(p);
+            }
+        })();
+
+        // ===== SOUND =====
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!state.soundOn) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                switch(type) {
+                    case 'click':
+                        osc.frequency.value = 800;
+                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                        break;
+                    case 'success':
+                        osc.frequency.value = 523;
+                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                        osc.start();
+                        osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1);
+                        osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.2);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                        osc.stop(audioCtx.currentTime + 0.4);
+                        break;
+                    case 'complete':
+                        [523, 659, 784, 1047].forEach((freq, i) => {
+                            const o = audioCtx.createOscillator();
+                            const g = audioCtx.createGain();
+                            o.connect(g); g.connect(audioCtx.destination);
+                            o.frequency.value = freq;
+                            g.gain.setValueAtTime(0.12, audioCtx.currentTime + i * 0.15);
+                            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.15 + 0.3);
+                            o.start(audioCtx.currentTime + i * 0.15);
+                            o.stop(audioCtx.currentTime + i * 0.15 + 0.3);
+                        });
+                        break;
+                    case 'error':
+                        osc.type = 'sawtooth';
+                        osc.frequency.value = 200;
+                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                        break;
+                    case 'victory':
+                        const melody = [523, 523, 659, 784, 784, 659, 784, 1047];
+                        melody.forEach((freq, i) => {
+                            const o = audioCtx.createOscillator();
+                            const g = audioCtx.createGain();
+                            o.connect(g); g.connect(audioCtx.destination);
+                            o.frequency.value = freq;
+                            g.gain.setValueAtTime(0.12, audioCtx.currentTime + i * 0.18);
+                            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.18 + 0.25);
+                            o.start(audioCtx.currentTime + i * 0.18);
+                            o.stop(audioCtx.currentTime + i * 0.18 + 0.25);
+                        });
+                        break;
+                    case 'alarm':
+                        osc.type = 'square';
+                        osc.frequency.value = 440;
+                        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15);
+                        osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.3);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+                        break;
+                }
+            } catch(e) {}
+        }
+
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            state.soundOn = !state.soundOn;
+            document.getElementById('sound-toggle').textContent = state.soundOn ? '🔊' : '🔇';
+        });
+
+        // ===== SCREEN MANAGEMENT =====
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showTransition(icon, text, callback) {
+            const overlay = document.getElementById('transition');
+            document.getElementById('transition-icon').textContent = icon;
+            document.getElementById('transition-text').textContent = text;
+            overlay.classList.add('active');
+            playSound('alarm');
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                callback();
+            }, 2000);
+        }
+
+        // ===== AGENT SETUP =====
+        function showAgentSetup() {
+            playSound('click');
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            showScreen('setup-screen');
+        }
+
+        function startMission() {
+            const agents = [];
+            for (let i = 1; i <= 3; i++) {
+                const name = document.getElementById(`agent${i}-name`).value.trim();
+                const age = parseInt(document.getElementById(`agent${i}-age`).value);
+                if (!name || !age) {
+                    playSound('error');
+                    document.getElementById(`agent${i}-name`).style.borderColor = 'var(--danger)';
+                    setTimeout(() => document.getElementById(`agent${i}-name`).style.borderColor = '', 1000);
+                    return;
+                }
+                agents.push({ name, age });
+            }
+            state.agents = agents;
+
+            // Generate code based on a random number for stage 1
+            state.stage1Code = null; // Will accept any 2-digit number
+
+            document.getElementById('progress-steps').classList.add('visible');
+            document.getElementById('score-display').classList.add('visible');
+
+            showTransition('🚀', 'מאתחל מבצע סודי...', () => {
+                goToStage(1);
+            });
+        }
+
+        // ===== SCORING =====
+        function addScore(points) {
+            state.score += points;
+            const el = document.getElementById('score-value');
+            el.textContent = state.score;
+            el.style.transform = 'scale(1.5)';
+            setTimeout(() => el.style.transform = 'scale(1)', 300);
+        }
+
+        // ===== TIMER =====
+        function startTimer(stage, minutes, timerId) {
+            let totalSeconds = minutes * 60;
+            const timerEl = document.getElementById(timerId);
+
+            state.timers[stage] = setInterval(() => {
+                totalSeconds--;
+                if (totalSeconds <= 0) {
+                    clearInterval(state.timers[stage]);
+                    totalSeconds = 0;
+                }
+                const m = Math.floor(totalSeconds / 60);
+                const s = totalSeconds % 60;
+                timerEl.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+
+                if (totalSeconds <= 60) {
+                    timerEl.classList.add('warning');
+                } else {
+                    timerEl.classList.remove('warning');
+                }
+            }, 1000);
+        }
+
+        function stopTimer(stage) {
+            clearInterval(state.timers[stage]);
+        }
+
+        // ===== STAGE NAVIGATION =====
+        function goToStage(num) {
+            state.currentStage = num;
+
+            // Update progress dots
+            document.querySelectorAll('.step-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i + 1 < num) dot.classList.add('completed');
+                if (i + 1 === num) dot.classList.add('active');
+            });
+            document.querySelectorAll('.step-connector').forEach((c, i) => {
+                c.classList.toggle('completed', i + 1 < num);
+            });
+
+            showScreen(`stage${num}-screen`);
+
+            switch(num) {
+                case 1: startTimer(1, 10, 'stage1-timer'); break;
+                case 2: startTimer(2, 15, 'stage2-timer'); break;
+                case 3: startTimer(3, 10, 'stage3-timer'); initRiddles(); break;
+                case 4: startTimer(4, 15, 'stage4-timer'); initCanvas(); break;
+            }
+        }
+
+        // ===== STAGE 1: MOVEMENT =====
+        function toggleTask(el, stage) {
+            playSound('click');
+            el.classList.toggle('completed');
+
+            if (stage === 1) {
+                const tasks = document.querySelectorAll('#stage1-tasks .task-item');
+                const completed = document.querySelectorAll('#stage1-tasks .task-item.completed').length;
+                const bar = document.getElementById('energy-bar');
+                bar.style.width = (completed / tasks.length * 100) + '%';
+
+                if (completed === tasks.length) {
+                    playSound('success');
+                    addScore(100);
+                    document.getElementById('stage1-code-section').style.display = 'block';
+                    document.getElementById('stage1-code-section').scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            if (stage === 2) {
+                const completed = document.querySelectorAll('#stage2-tasks .task-item.completed').length;
+                const total = document.querySelectorAll('#stage2-tasks .task-item').length;
+
+                if (completed === total) {
+                    playSound('success');
+                    addScore(150);
+                    const words = ['אנרגיה', 'גיבורים', 'כוח-על', 'שליחות'];
+                    const word = words[Math.floor(Math.random() * words.length)];
+                    document.getElementById('secret-word-2').textContent = word;
+                    document.getElementById('stage2-complete').style.display = 'block';
+                    document.getElementById('stage2-complete').scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function checkStage1Code() {
+            const d1 = document.getElementById('code1-1').value;
+            const d2 = document.getElementById('code1-2').value;
+
+            if (d1 && d2) {
+                const code = d1 + d2;
+                // Accept any number as the "code"
+                document.querySelectorAll('.code-input').forEach(inp => inp.classList.add('correct'));
+                playSound('complete');
+                addScore(50);
+
+                setTimeout(() => {
+                    stopTimer(1);
+                    showTransition('🔓', 'קוד התקבל! פותח שלב 2...', () => {
+                        goToStage(2);
+                    });
+                }, 800);
+            }
+        }
+
+        // ===== STAGE 3: RIDDLES =====
+        const riddles = [
+            {
+                question: '🤔 יש לי 4 רגליים בבוקר, 2 בצהריים ו-3 בערב. מי אני?',
+                options: ['שולחן', 'בן אדם', 'כלב', 'עכביש'],
+                correct: 1,
+                explanation: 'בן אדם! תינוק זוחל על 4, מבוגר הולך על 2, וזקן עם מקל — 3!'
+            },
+            {
+                question: '🧠 מה תמיד בא אבל אף פעם לא מגיע?',
+                options: ['הרכבת', 'מחר', 'החבר שלי', 'פיצה'],
+                correct: 1,
+                explanation: 'מחר! כי כשמחר מגיע, הוא כבר הופך להיום.'
+            },
+            {
+                question: '🏠 יש לי דלתות אבל אין לי מפתח, יש לי מקום אבל אין לי רצפה. מי אני?',
+                options: ['מלון', 'מקלדת', 'ארון', 'מכונית'],
+                correct: 1,
+                explanation: 'מקלדת! יש לה מקשים (keys/מפתחות) ו-space (מקום) אבל לא באמת.'
+            }
+        ];
+
+        let currentRiddle = 0;
+        let riddlesSolved = 0;
+
+        function initRiddles() {
+            currentRiddle = 0;
+            riddlesSolved = 0;
+            showRiddle();
+        }
+
+        function showRiddle() {
+            if (currentRiddle >= riddles.length) {
+                // All riddles done
+                stopTimer(3);
+                playSound('complete');
+                addScore(200);
+                showTransition('🧩', 'כל החידות נפתרו! שלב אחרון...', () => {
+                    goToStage(4);
+                });
+                return;
+            }
+
+            const r = riddles[currentRiddle];
+            const container = document.getElementById('riddle-container');
+            container.innerHTML = `
+                <p style="font-size:1.2rem;text-align:center;margin:20px 0;line-height:1.8">${r.question}</p>
+                <div class="riddle-options">
+                    ${r.options.map((opt, i) => `
+                        <div class="riddle-option" onclick="selectRiddleOption(this, ${i})">${opt}</div>
+                    `).join('')}
+                </div>
+                <p class="hint" style="text-align:center">חידה ${currentRiddle + 1} מתוך ${riddles.length} — חשבו ביחד! 🤝</p>
+                <div id="riddle-feedback" style="text-align:center;margin-top:15px"></div>
+            `;
+        }
+
+        function selectRiddleOption(el, index) {
+            const r = riddles[currentRiddle];
+            const options = el.parentElement.querySelectorAll('.riddle-option');
+
+            if (el.classList.contains('correct') || el.classList.contains('wrong')) return;
+
+            options.forEach(o => o.style.pointerEvents = 'none');
+
+            if (index === r.correct) {
+                el.classList.add('correct');
+                playSound('success');
+                addScore(75);
+                document.getElementById('riddle-feedback').innerHTML = `
+                    <p style="color:var(--success);font-size:1.1rem">✅ נכון! ${r.explanation}</p>
+                `;
+                setTimeout(() => {
+                    currentRiddle++;
+                    showRiddle();
+                }, 2500);
+            } else {
+                el.classList.add('wrong');
+                playSound('error');
+                document.getElementById('riddle-feedback').innerHTML = `
+                    <p style="color:var(--danger)">❌ לא בדיוק... נסו שוב!</p>
+                `;
+                setTimeout(() => {
+                    options.forEach(o => {
+                        o.classList.remove('wrong');
+                        o.style.pointerEvents = 'auto';
+                    });
+                    document.getElementById('riddle-feedback').innerHTML = '';
+                }, 1200);
+            }
+        }
+
+        // ===== STAGE 4: CREATIVE =====
+        let canvas, ctx, drawing = false;
+        let currentColor = '#000';
+        let brushSize = 5;
+
+        function initCanvas() {
+            canvas = document.getElementById('draw-canvas');
+            ctx = canvas.getContext('2d');
+
+            // Set canvas size based on container
+            const container = canvas.parentElement;
+            const w = Math.min(350, container.clientWidth - 4);
+            canvas.width = w;
+            canvas.height = Math.round(w * 0.85);
+
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Mouse events
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
+
+            // Touch events
+            canvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(getTouchPos(e)); });
+            canvas.addEventListener('touchmove', e => { e.preventDefault(); draw(getTouchPos(e)); });
+            canvas.addEventListener('touchend', e => { e.preventDefault(); endDraw(); });
+        }
+
+        function getTouchPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            return { offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top };
+        }
+
+        function startDraw(e) {
+            drawing = true;
+            ctx.beginPath();
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = brushSize;
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+
+        function endDraw() {
+            drawing = false;
+        }
+
+        function setColor(color, btn) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function setBrushSize(size) {
+            brushSize = size;
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById('uploaded-photo');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                playSound('success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ===== FINISH MISSION =====
+        function finishMission() {
+            const teamName = document.getElementById('team-name-input').value.trim() || 'צוות X';
+            state.teamName = teamName;
+
+            stopTimer(4);
+            addScore(200);
+
+            showTransition('🏆', 'המבצע הושלם בהצלחה!', () => {
+                showVictoryScreen();
+            });
+        }
+
+        function showVictoryScreen() {
+            document.getElementById('progress-steps').classList.remove('visible');
+
+            // Team name
+            document.getElementById('victory-team-name').textContent = state.teamName;
+
+            // Heroes wall
+            const logoContainer = document.getElementById('heroes-logo');
+            if (canvas) {
+                const logoImg = document.createElement('img');
+                logoImg.src = canvas.toDataURL();
+                logoImg.style.maxWidth = '250px';
+                logoImg.style.borderRadius = '12px';
+                logoContainer.appendChild(logoImg);
+            }
+
+            const uploadedPhoto = document.getElementById('uploaded-photo');
+            if (uploadedPhoto.src) {
+                const photoContainer = document.getElementById('heroes-photo');
+                const photoImg = document.createElement('img');
+                photoImg.src = uploadedPhoto.src;
+                photoContainer.appendChild(photoImg);
+            }
+
+            // Certificates
+            const roles = {
+                young: ['סוכן אנרגיה ראשי', 'לוחם אנרגיה', 'כוח על מיוחד'],
+                mid: ['אחראי מבצעים', 'קצין מודיעין', 'ראש חוליית בילוש'],
+                old: ['מפקד אסטרטגי', 'ראש המוסד', 'גנרל האנרגיה']
+            };
+
+            const certContainer = document.getElementById('certificates');
+            const emojis = ['🦊', '🐺', '🦁'];
+            const colors = ['var(--danger)', 'var(--primary)', 'var(--gold)'];
+
+            state.agents.sort((a, b) => a.age - b.age).forEach((agent, i) => {
+                let roleList;
+                if (agent.age <= 5) roleList = roles.young;
+                else if (agent.age <= 8) roleList = roles.mid;
+                else roleList = roles.old;
+
+                const role = roleList[Math.floor(Math.random() * roleList.length)];
+                const stars = '⭐'.repeat(Math.min(5, Math.max(3, Math.ceil(agent.age / 2))));
+
+                const cert = document.createElement('div');
+                cert.className = 'certificate';
+                cert.innerHTML = `
+                    <div class="cert-name">${emojis[i]} ${agent.name}</div>
+                    <div class="cert-role">${role}</div>
+                    <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-top:5px">גיל ${agent.age}</div>
+                    <div class="cert-stars">${stars}</div>
+                `;
+                certContainer.appendChild(cert);
+            });
+
+            showScreen('victory-screen');
+            playSound('victory');
+            launchConfetti();
+        }
+
+        // ===== CONFETTI =====
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#ff2d55', '#00f0ff', '#39ff14', '#ffd700', '#8b5cf6', '#ff8c00'];
+
+            for (let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.width = (5 + Math.random() * 10) + 'px';
+                piece.style.height = (10 + Math.random() * 15) + 'px';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                container.appendChild(piece);
+            }
+
+            // Second wave
+            setTimeout(() => {
+                for (let i = 0; i < 60; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    piece.style.left = Math.random() * 100 + '%';
+                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+                    piece.style.animationDelay = Math.random() * 1.5 + 's';
+                    piece.style.width = (5 + Math.random() * 10) + 'px';
+                    piece.style.height = (10 + Math.random() * 15) + 'px';
+                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    container.appendChild(piece);
+                }
+            }, 2000);
+
+            // Cleanup
+            setTimeout(() => { container.innerHTML = ''; }, 8000);
+        }
+    </script>
+</body>
+</html>
