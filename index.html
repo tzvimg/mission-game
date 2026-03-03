@@ -459,45 +459,6 @@
             opacity: 0.6;
         }
 
-        /* Code input */
-        .code-input-group {
-            display: flex;
-            gap: 10px;
-            margin: 25px 0;
-            justify-content: center;
-        }
-
-        .code-input {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            width: 65px;
-            height: 75px;
-            text-align: center;
-            background: rgba(0,240,255,0.05);
-            border: 2px solid rgba(0,240,255,0.3);
-            border-radius: 12px;
-            color: var(--primary);
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .code-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0,240,255,0.3);
-        }
-
-        .code-input.correct {
-            border-color: var(--success);
-            background: rgba(57,255,20,0.1);
-            color: var(--success);
-        }
-
-        .code-input.wrong {
-            border-color: var(--danger);
-            background: rgba(255,45,85,0.1);
-            animation: shake 0.5s ease-in-out;
-        }
-
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-8px); }
@@ -895,12 +856,137 @@
             display: block;
         }
 
+        /* Number picker (replaces code input) */
+        .number-picker {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .number-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            border: 2px solid rgba(0,240,255,0.3);
+            background: rgba(0,240,255,0.05);
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .number-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0,240,255,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0,240,255,0.3);
+        }
+
+        .number-btn:active {
+            transform: scale(0.95);
+        }
+
+        .number-btn.correct {
+            border-color: var(--success);
+            background: rgba(57,255,20,0.2);
+            color: var(--success);
+            box-shadow: 0 0 20px rgba(57,255,20,0.4);
+            animation: correctPulse 0.5s ease;
+        }
+
+        .number-btn.wrong {
+            border-color: var(--danger);
+            background: rgba(255,45,85,0.1);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Skip / continue button for stages */
+        .skip-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 25px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            border-color: rgba(255,255,255,0.4);
+            color: rgba(255,255,255,0.7);
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
-            .stage-card { padding: 25px 20px; }
+            .stage-card { padding: 25px 15px; }
             .riddle-options { grid-template-columns: 1fr; }
-            .code-input { width: 50px; height: 60px; font-size: 1.5rem; }
             .stage-timer { font-size: 2rem; }
+            .agent-row {
+                flex-wrap: wrap;
+            }
+            .agent-input {
+                font-size: 1rem;
+                padding: 10px 14px;
+                min-width: 0;
+            }
+            .agent-age-input {
+                width: 65px;
+            }
+            .agent-avatar {
+                width: 38px;
+                height: 38px;
+                font-size: 18px;
+            }
+            .agents-form {
+                gap: 12px;
+            }
+            .stage-header {
+                gap: 10px;
+            }
+            .stage-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 22px;
+                border-radius: 12px;
+            }
+            .stage-title {
+                font-size: 1.1rem;
+            }
+            .task-item {
+                padding: 12px;
+                gap: 10px;
+            }
+            .task-text {
+                font-size: 1rem;
+            }
+            .btn {
+                font-size: 0.95rem;
+                padding: 14px 30px;
+            }
+            .number-btn {
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
+            }
+            .mission-badge {
+                width: 130px;
+                height: 130px;
+                font-size: 60px;
+            }
+            .alert-box {
+                padding: 18px 20px;
+            }
         }
 
         /* Sound button */
@@ -1125,14 +1211,24 @@
             </ul>
 
             <div id="stage1-code-section" style="display:none">
-                <p style="text-align:center;margin-bottom:10px;color:var(--primary)">
-                    🔑 הזינו את הקוד הסודי: כמה כיסאות יש בסלון?
+                <p style="text-align:center;margin-bottom:10px;color:var(--primary);font-size:1.15rem">
+                    🔑 כמה כיסאות יש בסלון? לחצו על המספר הנכון!
                 </p>
-                <div class="code-input-group">
-                    <input class="code-input" maxlength="1" id="code1-1" oninput="moveToNext(this,'code1-2')">
-                    <input class="code-input" maxlength="1" id="code1-2" oninput="checkStage1Code()">
+                <div class="number-picker" id="stage1-picker">
+                    <button class="number-btn" onclick="pickNumber(this, 1)">1</button>
+                    <button class="number-btn" onclick="pickNumber(this, 2)">2</button>
+                    <button class="number-btn" onclick="pickNumber(this, 3)">3</button>
+                    <button class="number-btn" onclick="pickNumber(this, 4)">4</button>
+                    <button class="number-btn" onclick="pickNumber(this, 5)">5</button>
+                    <button class="number-btn" onclick="pickNumber(this, 6)">6</button>
+                    <button class="number-btn" onclick="pickNumber(this, 7)">7</button>
+                    <button class="number-btn" onclick="pickNumber(this, 8)">8</button>
                 </div>
-                <p class="hint" id="stage1-hint" style="text-align:center"></p>
+                <p class="hint" style="text-align:center">ספרו ביחד! כל תשובה נכונה 🎯</p>
+            </div>
+
+            <div style="text-align:center">
+                <button class="skip-btn" onclick="advanceFromStage(1)">⏩ דלגו לשלב הבא</button>
             </div>
         </div>
     </div>
@@ -1176,7 +1272,11 @@
             <div id="stage2-complete" style="display:none;text-align:center">
                 <p style="color:var(--primary);margin-bottom:10px">🎯 מצאתם הכל! המילה הסודית היא:</p>
                 <div class="secret-word" id="secret-word-2"></div>
-                <button class="btn btn-success" onclick="goToStage(3)">➡️ לשלב הבא</button>
+                <button class="btn btn-success" onclick="advanceFromStage(2)">➡️ לשלב הבא</button>
+            </div>
+
+            <div style="text-align:center">
+                <button class="skip-btn" onclick="advanceFromStage(2)">⏩ דלגו לשלב הבא</button>
             </div>
         </div>
     </div>
@@ -1196,6 +1296,10 @@
 
             <div id="riddle-container">
                 <!-- Riddles injected by JS -->
+            </div>
+
+            <div style="text-align:center">
+                <button class="skip-btn" onclick="advanceFromStage(3)">⏩ דלגו לשלב הבא</button>
             </div>
         </div>
     </div>
@@ -1295,7 +1399,7 @@
             teamName: '',
             soundOn: true,
             timers: {},
-            stage1Code: null
+            stage1Code: null  // kept for compat
         };
 
         // ===== PARTICLES =====
@@ -1433,9 +1537,6 @@
             }
             state.agents = agents;
 
-            // Generate code based on a random number for stage 1
-            state.stage1Code = null; // Will accept any 2-digit number
-
             document.getElementById('progress-steps').classList.add('visible');
             document.getElementById('score-display').classList.add('visible');
 
@@ -1539,30 +1640,34 @@
             }
         }
 
-        function moveToNext(current, nextId) {
-            if (current.value.length === 1) {
-                document.getElementById(nextId).focus();
-            }
+        // ===== NUMBER PICKER (Stage 1) =====
+        function pickNumber(btn, num) {
+            // Any number is accepted - it's about the experience
+            playSound('complete');
+            addScore(50);
+            btn.classList.add('correct');
+            // Disable all buttons
+            document.querySelectorAll('#stage1-picker .number-btn').forEach(b => b.style.pointerEvents = 'none');
+
+            setTimeout(() => {
+                advanceFromStage(1);
+            }, 800);
         }
 
-        function checkStage1Code() {
-            const d1 = document.getElementById('code1-1').value;
-            const d2 = document.getElementById('code1-2').value;
+        // ===== ADVANCE FROM STAGE (with transition) =====
+        function advanceFromStage(stage) {
+            stopTimer(stage);
+            const transitions = {
+                1: ['🔓', 'קוד התקבל! פותח שלב 2...'],
+                2: ['🔍', 'בילוש הושלם! עוברים לחידות...'],
+                3: ['🧩', 'כל החידות נפתרו! שלב אחרון...'],
+            };
+            const [icon, text] = transitions[stage] || ['🔓', 'פותח שלב הבא...'];
+            const nextStage = stage + 1;
 
-            if (d1 && d2) {
-                const code = d1 + d2;
-                // Accept any number as the "code"
-                document.querySelectorAll('.code-input').forEach(inp => inp.classList.add('correct'));
-                playSound('complete');
-                addScore(50);
-
-                setTimeout(() => {
-                    stopTimer(1);
-                    showTransition('🔓', 'קוד התקבל! פותח שלב 2...', () => {
-                        goToStage(2);
-                    });
-                }, 800);
-            }
+            showTransition(icon, text, () => {
+                goToStage(nextStage);
+            });
         }
 
         // ===== STAGE 3: RIDDLES =====
