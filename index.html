@@ -674,12 +674,7 @@
         }
 
         .certificate::before {
-            content: '🏅';
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 30px;
+            content: none;
         }
 
         .cert-name {
@@ -1035,6 +1030,101 @@
             to { transform: rotate(-5deg) scale(1); opacity: 1; }
         }
 
+        /* Agent photo avatars */
+        .agent-photo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .agent-photo-shalo {
+            object-position: 82% 15%;
+        }
+
+        .agent-photo-noga {
+            object-position: 50% 15%;
+        }
+
+        .agent-photo-dor {
+            object-position: 18% 15%;
+        }
+
+        /* Team photo banner */
+        .team-photo-banner {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(0,240,255,0.3);
+            position: relative;
+        }
+
+        .team-photo-banner img {
+            width: 100%;
+            display: block;
+        }
+
+        .team-photo-banner .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            text-align: center;
+        }
+
+        .team-photo-banner .photo-overlay span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
+        /* Large agent cards for intro */
+        .agents-intro {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .agent-card-intro {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(0,240,255,0.15);
+            border-radius: 16px;
+            min-width: 100px;
+        }
+
+        .agent-card-intro img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 15px rgba(0,240,255,0.3);
+        }
+
+        .agent-card-intro .agent-card-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .agent-card-intro .agent-card-age {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
         /* Heroes wall */
         .heroes-wall {
             background: rgba(255,215,0,0.05);
@@ -1125,6 +1215,24 @@
         <h1 class="glitch-title">מבצע: חילוץ האנרגיה</h1>
         <p class="subtitle">הסודית</p>
 
+        <div class="agents-intro">
+            <div class="agent-card-intro">
+                <img src="team.jpg" class="agent-photo-shalo" style="object-position:82% 15%">
+                <div class="agent-card-name">שלו</div>
+                <div class="agent-card-age">גיל 9</div>
+            </div>
+            <div class="agent-card-intro">
+                <img src="team.jpg" class="agent-photo-noga" style="object-position:50% 15%">
+                <div class="agent-card-name">נגה</div>
+                <div class="agent-card-age">גיל 7</div>
+            </div>
+            <div class="agent-card-intro">
+                <img src="team.jpg" class="agent-photo-dor" style="object-position:18% 15%">
+                <div class="agent-card-name">דור</div>
+                <div class="agent-card-age">גיל 3</div>
+            </div>
+        </div>
+
         <div class="alert-box">
             <span class="alert-icon">🔴 התראה דחופה</span>
             <p class="alert-text">
@@ -1151,17 +1259,17 @@
 
             <div class="agents-form" id="agents-form">
                 <div class="agent-row">
-                    <div class="agent-avatar" style="background:rgba(255,45,85,0.2);border:2px solid var(--danger)">🦊</div>
+                    <img src="team.jpg" class="agent-photo agent-photo-shalo" style="border:2px solid var(--danger);object-position:82% 15%">
                     <input class="agent-input" value="שלו" id="agent1-name" readonly>
                     <input class="agent-input agent-age-input" value="9" type="number" id="agent1-age" readonly>
                 </div>
                 <div class="agent-row">
-                    <div class="agent-avatar" style="background:rgba(0,240,255,0.2);border:2px solid var(--primary)">🐺</div>
+                    <img src="team.jpg" class="agent-photo agent-photo-noga" style="border:2px solid var(--primary);object-position:50% 15%">
                     <input class="agent-input" value="נגה" id="agent2-name" readonly>
                     <input class="agent-input agent-age-input" value="7" type="number" id="agent2-age" readonly>
                 </div>
                 <div class="agent-row">
-                    <div class="agent-avatar" style="background:rgba(255,215,0,0.2);border:2px solid var(--gold)">🦁</div>
+                    <img src="team.jpg" class="agent-photo agent-photo-dor" style="border:2px solid var(--gold);object-position:18% 15%">
                     <input class="agent-input" value="דור" id="agent3-name" readonly>
                     <input class="agent-input agent-age-input" value="3" type="number" id="agent3-age" readonly>
                 </div>
@@ -1367,6 +1475,13 @@
         <p style="font-size:1.2rem;color:rgba(255,255,255,0.7);margin:15px 0">
             צוות <strong id="victory-team-name" style="color:var(--gold)"></strong> הציל את האנרגיה של העולם!
         </p>
+
+        <div class="team-photo-banner">
+            <img src="team.jpg" alt="הצוות">
+            <div class="photo-overlay">
+                <span>⚡ הסוכנים שהצילו את העולם ⚡</span>
+            </div>
+        </div>
 
         <div class="heroes-wall" id="heroes-wall">
             <h3 style="color:var(--gold);font-family:'Orbitron',sans-serif;margin-bottom:15px">🏛️ קיר הגיבורים</h3>
@@ -1883,11 +1998,11 @@
                 photoContainer.appendChild(photoImg);
             }
 
-            // Certificates — personalized roles
+            // Certificates — personalized roles with photo positions
             const personalRoles = {
-                'שלו': { role: 'מפקד אסטרטגי', emoji: '🦊', stars: '⭐⭐⭐⭐⭐' },
-                'נגה': { role: 'אחראית מבצעים', emoji: '🐺', stars: '⭐⭐⭐⭐' },
-                'דור': { role: 'סוכן אנרגיה ראשי', emoji: '🦁', stars: '⭐⭐⭐' }
+                'שלו': { role: 'מפקד אסטרטגי', photoPos: '82% 15%', stars: '⭐⭐⭐⭐⭐' },
+                'נגה': { role: 'אחראית מבצעים', photoPos: '50% 15%', stars: '⭐⭐⭐⭐' },
+                'דור': { role: 'סוכן אנרגיה ראשי', photoPos: '18% 15%', stars: '⭐⭐⭐' }
             };
 
             const certContainer = document.getElementById('certificates');
@@ -1895,14 +2010,15 @@
             state.agents.forEach((agent) => {
                 const info = personalRoles[agent.name] || {
                     role: 'סוכן מיוחד',
-                    emoji: '🌟',
+                    photoPos: '50% 50%',
                     stars: '⭐⭐⭐'
                 };
 
                 const cert = document.createElement('div');
                 cert.className = 'certificate';
                 cert.innerHTML = `
-                    <div class="cert-name">${info.emoji} ${agent.name}</div>
+                    <img src="team.jpg" style="width:60px;height:60px;border-radius:50%;object-fit:cover;object-position:${info.photoPos};border:3px solid var(--gold);display:block;margin:10px auto 5px">
+                    <div class="cert-name">${agent.name}</div>
                     <div class="cert-role">${info.role}</div>
                     <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-top:5px">גיל ${agent.age}</div>
                     <div class="cert-stars">${info.stars}</div>
