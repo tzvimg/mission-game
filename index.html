@@ -1786,31 +1786,68 @@
         }
 
         // ===== STAGE 3: RIDDLES =====
-        const riddles = [
-            {
-                question: '🤔 יש לי 4 רגליים בבוקר, 2 בצהריים ו-3 בערב. מי אני?',
-                options: ['שולחן', 'בן אדם', 'כלב', 'עכביש'],
-                correct: 1,
-                explanation: 'בן אדם! תינוק זוחל על 4, מבוגר הולך על 2, וזקן עם מקל — 3!'
-            },
-            {
-                question: '🧠 מה תמיד בא אבל אף פעם לא מגיע?',
-                options: ['הרכבת', 'מחר', 'החבר שלי', 'פיצה'],
-                correct: 1,
-                explanation: 'מחר! כי כשמחר מגיע, הוא כבר הופך להיום.'
-            },
-            {
-                question: '🏠 יש לי דלתות אבל אין לי מפתח, יש לי מקום אבל אין לי רצפה. מי אני?',
-                options: ['מלון', 'מקלדת', 'ארון', 'מכונית'],
-                correct: 1,
-                explanation: 'מקלדת! יש לה מקשים (keys/מפתחות) ו-space (מקום) אבל לא באמת.'
-            }
+        const allRiddles = [
+            // 🐾 בעלי חיים וטבע
+            { question: '🕷️ כמה רגליים יש לעכביש?', options: ['6', '8', '10', '12'], correct: 1, category: '🐾' },
+            { question: '🦘 איזה חיה קופצת עם כיס בבטן?', options: ["ג'ירפה", 'פיל', 'קנגורו', 'דוב פנדה'], correct: 2, category: '🐾' },
+            { question: '🐋 מהו היונק הגדול ביותר בעולם?', options: ['פיל אפריקאי', 'אריה', 'כריש לבן', 'לווייתן כחול'], correct: 3, category: '🐾' },
+            { question: '🦇 איזה בעל חיים עף בעיקר בלילה?', options: ['עטלף', 'פרפר', 'דבורה', 'יונה'], correct: 0, category: '🐾' },
+            { question: '📅 כמה ימים יש בשבוע?', options: ['חמישה', 'שישה', 'שבעה', 'שמונה'], correct: 2, category: '🐾' },
+            // 🏠 ידע כללי יומיומי
+            { question: '🥣 באיזה כלי משתמשים כדי לאכול מרק?', options: ['סכין', 'כף', 'מזלג', 'מקל'], correct: 1, category: '🏠' },
+            { question: '🚂 באיזה כלי תחבורה נוסעים על מסילה?', options: ['אוטובוס', 'מטוס', 'רכבת', 'אופניים'], correct: 2, category: '🏠' },
+            { question: '🎨 איזה צבע יוצא כשמערבבים אדום וכחול?', options: ['ירוק', 'סגול', 'כתום', 'חום'], correct: 1, category: '🏠' },
+            { question: '🔢 איזה מספר שווה ל־5+5?', options: ['8', '9', '10', '11'], correct: 2, category: '🏠' },
+            { question: '🌙 מהו ההפך מיום?', options: ['בוקר', 'ערב', 'לילה', 'צהריים'], correct: 2, category: '🏠' },
+            // 🌍 עולם, חלל וגאוגרפיה
+            { question: '☀️ איזה כוכב לכת הכי קרוב לשמש?', options: ['נוגה', 'כדור הארץ', 'כוכב חמה (מרקורי)', 'מאדים'], correct: 2, category: '🌍' },
+            { question: '🗽 איזו עיר מכונה "התפוח הגדול"?', options: ['לונדון', 'פריז', 'ניו יורק', 'טוקיו'], correct: 2, category: '🌍' },
+            { question: '🌊 מה מכסה בערך 71% מכדור הארץ?', options: ['אדמה', 'חול', 'מים', 'קרח'], correct: 2, category: '🌍' },
+            { question: '🌎 באיזו יבשת נמצאת ברזיל?', options: ['אירופה', 'אסיה', 'דרום אמריקה', 'אפריקה'], correct: 2, category: '🌍' },
+            { question: '🌳 מה שמו של יער הגשם הגדול בעולם?', options: ['הסהרה', 'האמזונס', 'הטייגה', 'הפמפס'], correct: 1, category: '🌍' },
+            // 🍓 אוכל, צבעים וחפצים
+            { question: '🍓 באיזה צבע בדרך כלל תות שדה בשל?', options: ['ירוק', 'כחול', 'אדום', 'שחור'], correct: 2, category: '🍓' },
+            { question: '🥥 איזה פרי יש לו קליפה חומה ופנים לבן?', options: ['בננה', 'קוקוס', 'תפוח', 'אגס'], correct: 1, category: '🍓' },
+            { question: '🍓 איזה פרי מלא בהרבה זרעים קטנים מבחוץ?', options: ['תפוח', 'בננה', 'תות שדה', 'שזיף'], correct: 2, category: '🍓' },
+            { question: '🫒 איזה עץ נותן לנו זיתים?', options: ['עץ תפוחים', 'עץ לימון', 'עץ זית', 'עץ דקל'], correct: 2, category: '🍓' },
+            { question: '✏️ איזה כלי משתמשים כדי לכתוב במחברת?', options: ['סרגל', 'עיפרון', 'מחק', 'מספריים'], correct: 1, category: '🍓' },
         ];
 
+        // Pick 5 random riddles (one from each category when possible)
+        let riddles = [];
         let currentRiddle = 0;
         let riddlesSolved = 0;
 
         function initRiddles() {
+            // Shuffle and pick 5 riddles, trying to get variety
+            const categories = ['🐾', '🏠', '🌍', '🍓'];
+            const picked = [];
+            const used = new Set();
+
+            // One from each category
+            for (const cat of categories) {
+                const catRiddles = allRiddles.filter((r, i) => r.category === cat && !used.has(i));
+                if (catRiddles.length > 0) {
+                    const idx = allRiddles.indexOf(catRiddles[Math.floor(Math.random() * catRiddles.length)]);
+                    picked.push(allRiddles[idx]);
+                    used.add(idx);
+                }
+            }
+
+            // Fill to 5 from remaining
+            const remaining = allRiddles.filter((_, i) => !used.has(i));
+            while (picked.length < 5 && remaining.length > 0) {
+                const idx = Math.floor(Math.random() * remaining.length);
+                picked.push(remaining.splice(idx, 1)[0]);
+            }
+
+            // Shuffle the picked riddles
+            for (let i = picked.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [picked[i], picked[j]] = [picked[j], picked[i]];
+            }
+
+            riddles = picked;
             currentRiddle = 0;
             riddlesSolved = 0;
             showRiddle();
@@ -1854,8 +1891,10 @@
                 el.classList.add('correct');
                 playSound('success');
                 addScore(75);
+                // Highlight correct answer
+                options.forEach(o => { if (o !== el) o.style.opacity = '0.4'; });
                 document.getElementById('riddle-feedback').innerHTML = `
-                    <p style="color:var(--success);font-size:1.1rem">✅ נכון! ${r.explanation}</p>
+                    <p style="color:var(--success);font-size:1.3rem">✅ נכון! כל הכבוד!</p>
                 `;
                 setTimeout(() => {
                     currentRiddle++;
@@ -1868,8 +1907,8 @@
                     <p style="color:var(--danger)">❌ לא בדיוק... נסו שוב!</p>
                 `;
                 setTimeout(() => {
+                    el.classList.remove('wrong');
                     options.forEach(o => {
-                        o.classList.remove('wrong');
                         o.style.pointerEvents = 'auto';
                     });
                     document.getElementById('riddle-feedback').innerHTML = '';
